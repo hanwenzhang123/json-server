@@ -1,9 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EventList</title>
+    <link rel="stylesheet" href="style.css">
   </head>
-  <body></body>
+
+  <body>
+    <div id="container">
+      <button id="btn">ADD NEW</button>
+      <thead>
+        <div id="header">
+          <tr>
+            <th><span>Event name</span></th>
+            <th><span>Start date</span></th>
+            <th><span>End date</span></th>
+            <th><span> </span></th>
+            <th><span>Actions</span></th>
+          </tr>
+        </div>
+      </thead>
+      <tbody>
+        <div id="content">
+          <tr>
+            <span>
+              <td><input type="text" disabled placeholder="TESTING!"></td>
+              <td><input type="date" disabled></td>
+              <td><input type="date" disabled></td>
+            </span>
+            <span>
+              <td><button id="edit" disabled>EDIT</button></td>
+              <td><button id="delete" disabled>DELETE</button></td>
+            </span>
+          </tr>
+
+        </div>
+      </tbody>
+    </div>
+
+    <script src="app.js" defer></script>
+  </body>
+
 </html>
