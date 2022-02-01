@@ -2,30 +2,112 @@ const btn = document.getElementById("btn");
 const content = document.getElementById("content");
 
 const URL = "http://localhost:3000/events";
+const taskList = [];
+let showNewRow = false;
 
-btn.addEventListener("click", (e) => {
-  let template = `
-    <tr>
-      <span>
-        <td><input type="text"></td>
-        <td><input type="date"></td>
-        <td><input type="date"></td>
-        <td><button class="edit">EDIT</button>
-        <button class="delete">DELETE</button></td>
-      </span>
-    </tr>
+//Finish Show Feature
+const renderEvents = () => {
+  let template = "";
+  taskList.forEach((event) => {
+    if (event.isDisabled) {
+      template += `
+            <tr>
+              <span>
+                <td><input type="text" id="event-name-input-${event.id}" value="${event.eventName}" disabled></td>
+                <td><input type="date" id="start-date-input-${event.id} "value="${event.startDate}" disabled></td>
+                <td><input type="date" id="end-date-input-${event.id}" value="${event.endDate}" disabled></td>
+                <td><button onclick="editBtn(${event.id})">EDIT</button>
+                <button onclick="deleteBtn(${event.id})">DELETE</button></td>
+              </span>
+            </tr>
+          `;
+    } else {
+      template += `
+            <tr>
+              <span>
+                <td><input type="text" id="event-name-input-${event.id}" value="${event.eventName}"></td>
+                <td><input type="date" id="start-date-input-${event.id} "value="${event.startDate}"></td>
+                <td><input type="date" id="end-date-input-${event.id}" value="${event.endDate}"></td>
+                <td><button onclick="saveEditBtn(${event.id})">SAVE</button>
+                <button onclick="cancelBtn()">CANCEL</button></td>
+              </span>
+            </tr>
+          `;
+    }
+  });
+
+  if (showNewRow) {
+    template += `
+        <tr>
+          <span>
+            <td><input id="event-name-input" type="text"></td>
+            <td><input id="start-date-input" type="date"></td>
+            <td><input id="end-date-input" type="date"></td>
+            <td><button onclick="saveEdit()">SAVE</button>
+            <button onclick="cancelBtn()">CANCEL</button></td>
+          </span>
+        </tr>
     `;
-  content.appendChild(template);
+  }
+
+  content.innerHTML = template;
+};
+
+//Finish Initial Render Feature
+const initialRender = async () => {
+  const res = await fetch(URL);
+  const posts = await res.json();
+
+  posts.forEach((event) => {
+    event.isDisabled = true;
+    taskList.push(event);
+  });
+
+  renderEvents();
+};
+
+//Working on Add Feature
+btn.addEventListener("click", (e) => {
+  showNewRow = true;
+  renderEvents();
 });
 
+//Finish Cancel Feature
 const cancelBtn = () => {
   renderEvents();
 };
 
+//WOrking on Edit Feature
 const editBtn = (id) => {
-  console.log(id);
+  taskList[id].isDisabled = false;
+  renderEvents();
 };
 
+//Finish Save Feature
+const saveEdit = () => {
+  let eventName = document.getElementById("event-name-input").value;
+  let startDate = document.getElementById("start-date-input").value;
+  let endDate = document.getElementById("end-date-input").value;
+
+  fetch(URL + eventsLists[id].id, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({
+      eventName: eventName,
+      startDate: startDate,
+      endDate: endDate,
+    }),
+  })
+    .then((response) => response.json())
+    .then((json) => console.log(json));
+
+  initialRender();
+};
+
+//Finish Save After Edit Feature
 const saveEditBtn = (id) => {
   let eventName = document.getElementById("event-name-input-" + id).value;
   let startDate = document.getElementById("start-date-input-" + id).value;
@@ -45,8 +127,11 @@ const saveEditBtn = (id) => {
   })
     .then((response) => response.json())
     .then((json) => console.log(json));
+
+  initialRender();
 };
 
+//Finish Delete Feature
 const deleteBtn = (id) => {
   fetch(URL + id, {
     method: "DELETE",
@@ -56,48 +141,9 @@ const deleteBtn = (id) => {
     },
   })
     .then((response) => response.json())
-    .then((json) => {
-      console.log(json);
-      getData();
-    });
+    .then((json) => console.log(json));
+
+  initialRender();
 };
 
-const renderEvents = async () => {
-  const res = await fetch(URL);
-  const posts = await res.json();
-
-  let template = "";
-  posts.forEach((event) => {
-    template += `
-    <tr>
-      <span>
-        <td><input type="text" id="event-name-input-${event.id}" value="${event.eventName}"></td>
-        <td><input type="date" id="start-date-input-${event.id} "value="${event.startDate}"></td>
-        <td><input type="date" id="end-date-input-${event.id}" value="${event.endDate}"></td>
-        <td><button onclick="editBtn(${event.id})">EDIT</button>
-        <button onclick="deleteBtn(${event.id})">DELETE</button></td>
-      </span>
-    </tr>
-    `;
-  });
-
-  content.innerHTML = template;
-};
-
-window.addEventListener("DOMContentLoaded", () => renderEvents());
-
-// // Create a new Event
-// fetch("http://localhost:3000/events", {
-//   method: "POST",
-//   headers: {
-//     "Content-Type": "application/json",
-//     Accept: "application/json",
-//   },
-//   body: JSON.stringify({
-//     eventName: "TEST",
-//     startDate: "1641790800000",
-//     endDate: "1641790800000",
-//   }),
-// })
-//   .then((response) => response.json())
-//   .then((json) => console.log(json));
+window.addEventListener("DOMContentLoaded", () => initialRender());
