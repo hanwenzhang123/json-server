@@ -5,6 +5,17 @@ const URL = "http://localhost:3000/events";
 const taskList = [];
 let showNewRow = false;
 
+const convertDate = (time) => {
+  if (time !== "") {
+    let date = new Date(time);
+    (month = ("0" + (date.getMonth() + 1)).slice(-2)),
+      (day = ("0" + date.getDate()).slice(-2));
+    return [date.getFullYear(), month, day].join("-");
+  } else {
+    return "";
+  }
+};
+
 //Finish Show Feature
 const renderEvents = (arr) => {
   let template = "";
@@ -14,9 +25,15 @@ const renderEvents = (arr) => {
       template += `
             <tr>
               <span>
-                <td><input type="text" id="event-name-input-${event.id}" value="${event.eventName}" disabled></td>
-                <td><input type="date" id="start-date-input-${event.id} "value="${event.startDate}" disabled></td>
-                <td><input type="date" id="end-date-input-${event.id}" value="${event.endDate}" disabled></td>
+                <td><input type="text" id="event-name-input-${
+                  event.id
+                }" value="${convertDate(+event.startDate)}" disabled></td>
+                <td><input type="date" id="start-date-input-${
+                  event.id
+                } " value="${convertDate(+event.startDate)}" disabled></td>
+                <td><input type="date" id="end-date-input-${
+                  event.id
+                }" value="${convertDate(+event.startDate)}" disabled></td>
                 <td><button onclick="editBtn(${event.id})">EDIT</button>
                 <button onclick="deleteBtn(${event.id})">DELETE</button></td>
               </span>
@@ -118,7 +135,7 @@ function saveEditBtn(id) {
   let startDate = document.getElementById("start-date-input-" + id).value;
   let endDate = document.getElementById("end-date-input-" + id).value;
 
-  fetch(URL + taskList[id].id, {
+  fetch(URL + "/" + taskList[id].id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -138,7 +155,7 @@ function saveEditBtn(id) {
 
 //Finish Delete Feature
 function deleteBtn(id) {
-  fetch(URL + id, {
+  fetch(URL + "/" + id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
