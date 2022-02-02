@@ -6,9 +6,10 @@ const taskList = [];
 let showNewRow = false;
 
 //Finish Show Feature
-const renderEvents = () => {
+const renderEvents = (arr) => {
   let template = "";
-  taskList.forEach((event) => {
+  console.log(taskList);
+  arr.forEach((event) => {
     if (event.isDisabled) {
       template += `
             <tr>
@@ -63,33 +64,37 @@ const initialRender = async () => {
     taskList.push(event);
   });
 
-  renderEvents();
+  renderEvents(taskList);
 };
 
 //Working on Add Feature
 btn.addEventListener("click", (e) => {
   showNewRow = true;
-  renderEvents();
+  renderEvents(taskList);
 });
 
 //Finish Cancel Feature
-const cancelBtn = () => {
-  renderEvents();
-};
+function cancelBtn() {
+  renderEvents(taskList);
+}
 
 //WOrking on Edit Feature
-const editBtn = (id) => {
-  taskList[id].isDisabled = false;
-  renderEvents();
-};
+function editBtn(id) {
+  for (let each of taskList) {
+    if (taskList[each] === id) {
+      taskList[each].isDisabled = false;
+    }
+  }
+  renderEvents(taskList);
+}
 
 //Finish Save Feature
-const saveEdit = () => {
+function saveEdit() {
   let eventName = document.getElementById("event-name-input").value;
   let startDate = document.getElementById("start-date-input").value;
   let endDate = document.getElementById("end-date-input").value;
 
-  fetch(URL + eventsLists[id].id, {
+  fetch(URL + taskList.id, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -105,15 +110,15 @@ const saveEdit = () => {
     .then((json) => console.log(json));
 
   initialRender();
-};
+}
 
 //Finish Save After Edit Feature
-const saveEditBtn = (id) => {
+function saveEditBtn(id) {
   let eventName = document.getElementById("event-name-input-" + id).value;
   let startDate = document.getElementById("start-date-input-" + id).value;
   let endDate = document.getElementById("end-date-input-" + id).value;
 
-  fetch(URL + eventsLists[id].id, {
+  fetch(URL + taskList[id].id, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -129,10 +134,10 @@ const saveEditBtn = (id) => {
     .then((json) => console.log(json));
 
   initialRender();
-};
+}
 
 //Finish Delete Feature
-const deleteBtn = (id) => {
+function deleteBtn(id) {
   fetch(URL + id, {
     method: "DELETE",
     headers: {
@@ -144,6 +149,6 @@ const deleteBtn = (id) => {
     .then((json) => console.log(json));
 
   initialRender();
-};
+}
 
 window.addEventListener("DOMContentLoaded", () => initialRender());
